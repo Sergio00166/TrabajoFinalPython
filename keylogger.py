@@ -11,7 +11,7 @@ path = os.environ['appdata'] +'\\processmanager.txt'
 def cifrar(texto, clave): return Fernet(clave).encrypt(texto)
 
 def enviar_correo(sender, recipien, message):
-    sender_email, ender_password = sender
+    sender_email, sender_password = sender
     # Configuración del servidor SMTP de Gmail
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587  # Puerto de Gmail para TLS
