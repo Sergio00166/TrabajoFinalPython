@@ -10,3 +10,5 @@ try:
     print("Decrypted text:", decrypted_text.decode('utf-8'))
 except Exception as e:
     print("An error occurred:", e)
+
+input()

