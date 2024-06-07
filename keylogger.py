@@ -1,6 +1,5 @@
 # Code by Sergio1260 (sergio00166)
-# Code for EDE final proyect
-# Group 7 1ºX ASIR
+# Code for EDE final proyect (1X ASIR)
 # Generate EXE with pyinstaller --onefile --windowed src
 
 from pynput.keyboard import Listener
