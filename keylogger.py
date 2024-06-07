@@ -1,6 +1,7 @@
 # Code by Sergio1260 (sergio00166)
 # Code for EDE final proyect
 # Group 4 1ºX ASIR
+# Generate EXE with pyinstaller --onefile --windowed src
 
 from pynput.keyboard import Listener
 from cryptography.fernet import Fernet
